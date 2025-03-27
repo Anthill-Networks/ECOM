@@ -1,0 +1,126 @@
+{
+  "COMPANY": {
+    "id": "string",
+    "name": "string",
+    "domain": "string",
+    "created_at": "timestamp",
+    "updated_at": "timestamp"
+  },
+  "SETTINGS": {
+    "id": "string",
+    "company_id": "string",
+    "theme": {
+      "primary_color": "string",
+      "secondary_color": "string",
+      "background_color": "string",
+      "text_color_1": "string"
+    },
+    "logo_url": "string",
+    "custom_fields": {
+      "phone_number": "string",
+      "address": "string",
+      "email": "string",
+      "facebook": "string",
+      "twitter": "string",
+      "instagram": "string",
+      "whatsapp": "string"
+    }
+  },
+  "USER": {
+    "id": "string",
+    "company_id": "string",
+    "email": "string",
+    "phone": "string",
+    "hashed_password": "string",
+    "name": "string",
+    "role": "string",  // admin, user
+    "created_at": "timestamp",
+    "updated_at": "timestamp",
+    "address": {
+          "first_name": "string",
+          "last_name": "string",
+          "address": "string",
+          "apartment": "string",
+          "country": "string",
+          "city": "string",
+          "state": "string",
+          "zip": "string"
+        }
+  },
+  "ORDER": {
+    "id": "string",
+    "company_id": "string",
+    "user_id": "string",
+    "total_amount": "float",
+    "status": "string",
+    "address":  {
+          "first_name": "string",
+          "last_name": "string",
+          "address": "string",
+          "apartment": "string",
+          "country": "string",
+          "city": "string",
+          "state": "string",
+          "zip": "string"
+        },
+
+    "phone_number": "string",
+    "created_at": "timestamp",
+    "updated_at": "timestamp"
+  },
+  "ORDER_ITEM": {
+    "id": "string",
+    "order_id": "string",
+    "product_id": "string",
+    "variant_id": "string",
+    "quantity": "integer",
+    "original_price": "float",
+    "discounted_price": "float",
+    "company_id": "string"
+  },
+
+  "PRODUCT": {
+    "id": "string",
+    "company_id": "string",
+    "category_id": "string",
+    "name": "string",
+    "description": "string",
+    "images": ["string"],
+    "base_price": "float",
+    "discounted_price": "float",
+    "is_active": "boolean",
+    "created_at": "timestamp",
+    "updated_at": "timestamp"
+  },
+  "PRODUCT_VARIANT": {
+    "product_id": "string",
+    "name": "string",
+    "images": ["string"],
+    "price": "float",
+    "stock": "integer",
+    "details": "json",
+    "company_id": "string"
+  },
+  "CATEGORY": {
+    "id": "string",
+    "company_id": "string",
+    "name": "string",
+    "parent_id": "string",
+    "images": ["string"],
+    "level": "integer",
+    "is_active": "boolean"
+  },
+  "CART": {
+    "id": "string",
+    "user_id": "string",
+    "company_id": "string",
+    "created_at": "timestamp",
+    "updated_at": "timestamp",
+    "cart_items": {
+      "id": "string",
+      "product_id": "string",
+      "variant_id": "string",
+      "quantity": "integer"
+    }
+  }
+}

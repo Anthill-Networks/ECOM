@@ -1,0 +1,24 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "express": "^4.21.0",
+    "firebase": "^10.13.2",
+    "firebase-admin": "^12.5.0",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.16",
+    "razorpay": "^2.9.5",
+    "uuid": "^10.0.0"
+  }
+}
