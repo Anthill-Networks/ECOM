@@ -4,11 +4,12 @@ import Nav from '../components/navbar/nav';
 import ProductDetailsHeader from '../components/product/ProductDetailsHeader';
 import Footer from '../components/footer/footer';
 import axiosInstance from '../axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [cartItems, setCartItems] = useState([]);
   const [contactInfo, setContactInfo] = useState({ email: '', phone: '' });
   const [shippingAddress, setShippingAddress] = useState({
@@ -30,8 +31,24 @@ export default function CheckoutPage() {
   useEffect(() => {
     const fetchCartItems = async () => {
       try {
-        let response = await axiosInstance.get('/carts');
-        setCartItems(response.data.cart_items);
+        // Check if this is a "Buy Now" checkout
+        const searchParams = new URLSearchParams(location.search);
+        const isBuyNow = searchParams.get('buyNow') === 'true';
+        
+        if (isBuyNow) {
+          // Get the single item from session storage
+          const buyNowItem = sessionStorage.getItem('buyNowItem');
+          if (buyNowItem) {
+            setCartItems([JSON.parse(buyNowItem)]);
+          } else {
+            toast.error('Buy now item not found');
+            navigate('/');
+          }
+        } else {
+          // Regular cart checkout
+          let response = await axiosInstance.get('/carts');
+          setCartItems(response.data.cart_items);
+        }
       } catch (error) {
         const errorMessage = error.message === 'Network Error'
           ? 'Unable to connect to server. Please check your internet connection.'
@@ -42,7 +59,7 @@ export default function CheckoutPage() {
     };
 
     fetchCartItems();
-  }, []);
+  }, [location.search, navigate]);
 
   useEffect(() => {
     const fetchSavedAddresses = async () => {
@@ -157,6 +174,10 @@ export default function CheckoutPage() {
       const orderResponse = await axiosInstance.post('/orders', order);
       const { primaryResult, razorpayOrder } = orderResponse.data;
 
+      // Check if this is a "Buy Now" checkout
+      const searchParams = new URLSearchParams(location.search);
+      const isBuyNow = searchParams.get('buyNow') === 'true';
+
       for (const item of cartItems) {
         const variant = item.product.variants.find(v => v.id === item.variant_id);
         const orderItem = {
@@ -192,7 +213,14 @@ export default function CheckoutPage() {
             });
 
             if (verifyResponse.data.status === "success") {
-              localStorage.removeItem('cart');
+              // If this was a normal cart purchase, clear the cart
+              if (!isBuyNow) {
+                localStorage.removeItem('cart');
+              } else {
+                // Clear the buy now item from session storage
+                sessionStorage.removeItem('buyNowItem');
+              }
+              
               toast.success('Payment successful!');
               navigate('/ordersuccess');
             } else {

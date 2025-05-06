@@ -31,6 +31,7 @@ export default function ProductShowcase() {
   const [newReview, setNewReview] = useState({ rating: 5, comment: '' });
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const { settings, loading: settingsLoading } = useSettings();
+  const [buyingNow, setBuyingNow] = useState(false);
 
   useEffect(() => {
     // Check if user is logged in by looking for auth token
@@ -115,6 +116,32 @@ export default function ProductShowcase() {
     } catch (error) {
       console.error('Error submitting review:', error);
       toast.error('Failed to submit review');
+    }
+  };
+
+  const handleBuyNow = async () => {
+    try {
+      setBuyingNow(true);
+      
+      // Create a temporary order item for checkout
+      const singleItem = {
+        product: product,
+        product_id: product.id,
+        variant_id: selectedVariant.id,
+        quantity: quantity,
+        id: Date.now().toString() // Temporary ID
+      };
+      
+      // Store the single item in session storage to use in checkout
+      sessionStorage.setItem('buyNowItem', JSON.stringify(singleItem));
+      
+      // Navigate to checkout
+      navigate('/checkout?buyNow=true');
+    } catch (error) {
+      console.error('Error proceeding to checkout:', error);
+      toast.error('Failed to proceed to checkout');
+    } finally {
+      setBuyingNow(false);
     }
   };
 
@@ -247,17 +274,31 @@ export default function ProductShowcase() {
                 </div>
               </div>
 
-              <button 
-                onClick={addtocart}
-                disabled={addingToCart}
-                className="w-full py-3 px-4 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center justify-center"
-              >
-                {addingToCart ? (
-                  <HashLoader color="#ffffff" size={24} />
-                ) : (
-                  'Add to Cart'
-                )}
-              </button>
+              <div className="flex space-x-4">
+                <button 
+                  onClick={addtocart}
+                  disabled={addingToCart}
+                  className="flex-1 py-3 px-4 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center justify-center"
+                >
+                  {addingToCart ? (
+                    <HashLoader color="#ffffff" size={24} />
+                  ) : (
+                    'Add to Cart'
+                  )}
+                </button>
+                
+                <button 
+                  onClick={handleBuyNow}
+                  disabled={buyingNow}
+                  className="flex-1 py-3 px-4 bg-[#0d2946] text-white rounded-md hover:bg-[#0a1e38] transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center"
+                >
+                  {buyingNow ? (
+                    <HashLoader color="#ffffff" size={24} />
+                  ) : (
+                    'Buy Now'
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../axios';
 import { toast } from 'react-hot-toast';
 import HashLoader from 'react-spinners/HashLoader';
 import { useCart } from '../../context/CartContext';
 
 const ProductCard = ({ product }) => {
+  const navigate = useNavigate();
   const [buttonText, setButtonText] = useState("Add to bag");
   const [isAdded, setIsAdded] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [addingToCart, setAddingToCart] = useState(false);
+  const [buyingNow, setBuyingNow] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(
     product.variants && product.variants.length > 0 ? product.variants[0] : null
   );
@@ -49,6 +51,32 @@ const ProductCard = ({ product }) => {
       .finally(() => {
         setAddingToCart(false);
       });
+  };
+
+  const handleBuyNow = () => {
+    try {
+      setBuyingNow(true);
+      
+      // Create a temporary order item for checkout
+      const singleItem = {
+        product: product,
+        product_id: product.id,
+        variant_id: selectedVariant.id,
+        quantity: quantity,
+        id: Date.now().toString() // Temporary ID
+      };
+      
+      // Store the single item in session storage
+      sessionStorage.setItem('buyNowItem', JSON.stringify(singleItem));
+      
+      // Navigate to checkout
+      navigate('/checkout?buyNow=true');
+    } catch (error) {
+      console.error('Error proceeding to checkout:', error);
+      toast.error('Failed to proceed to checkout');
+    } finally {
+      setBuyingNow(false);
+    }
   };
 
   const handleVariantChange = (e) => {
@@ -119,21 +147,37 @@ const ProductCard = ({ product }) => {
           </div>
         </div>
 
-        <button
-          onClick={addtocart}
-          disabled={addingToCart}
-          className="w-full bg-[#86B84E] text-white py-3 rounded-lg text-lg font-medium hover:bg-[#76a343] transition duration-200"
-        >
-          {addingToCart ? (
-            <div className="flex items-center justify-center">
-              <HashLoader color="#ffffff" size={24} />
-            </div>
-          ) : isAdded ? (
-            <span>&#10003; {buttonText}</span>
-          ) : (
-            "Add to bag"
-          )}
-        </button>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={addtocart}
+            disabled={addingToCart}
+            className="bg-[#86B84E] text-white py-3 rounded-lg text-lg font-medium hover:bg-[#76a343] transition duration-200"
+          >
+            {addingToCart ? (
+              <div className="flex items-center justify-center">
+                <HashLoader color="#ffffff" size={24} />
+              </div>
+            ) : isAdded ? (
+              <span>&#10003; {buttonText}</span>
+            ) : (
+              "Add to bag"
+            )}
+          </button>
+
+          <button
+            onClick={handleBuyNow}
+            disabled={buyingNow}
+            className="bg-[#2E7D32] text-white py-3 rounded-lg text-lg font-medium hover:bg-[#1B5E20] transition duration-200"
+          >
+            {buyingNow ? (
+              <div className="flex items-center justify-center">
+                <HashLoader color="#ffffff" size={20} />
+              </div>
+            ) : (
+              "Buy Now"
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

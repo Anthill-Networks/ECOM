@@ -25,6 +25,7 @@ export default function ProductShowcase() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [addingToCart, setAddingToCart] = useState(false);
+  const [buyingNow, setBuyingNow] = useState(false);
   const [productImages, setProductImages] = useState([]);
   const [activeTab, setActiveTab] = useState("description");
   const [reviews, setReviews] = useState([]);
@@ -80,6 +81,32 @@ export default function ProductShowcase() {
       setAddingToCart(false);
     }
   }
+
+  const handleBuyNow = async () => {
+    try {
+      setBuyingNow(true);
+      
+      // Create a temporary order item for checkout
+      const singleItem = {
+        product: product,
+        product_id: product.id,
+        variant_id: selectedVariant.id,
+        quantity: quantity,
+        id: Date.now().toString() // Temporary ID
+      };
+      
+      // Store the single item in session storage to use in checkout
+      sessionStorage.setItem('buyNowItem', JSON.stringify(singleItem));
+      
+      // Navigate to checkout
+      navigate('/checkout?buyNow=true');
+    } catch (error) {
+      console.error('Error proceeding to checkout:', error);
+      toast.error('Failed to proceed to checkout');
+    } finally {
+      setBuyingNow(false);
+    }
+  };
 
   const nextImage = () => {
     setSelectedImageIndex((prevIndex) => (prevIndex + 1) % productImages.length);
@@ -247,17 +274,31 @@ export default function ProductShowcase() {
                 </div>
               </div>
 
-              <button 
-                onClick={addtocart}
-                disabled={addingToCart}
-                className="w-full py-3 px-4 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center justify-center"
-              >
-                {addingToCart ? (
-                  <HashLoader color="#ffffff" size={24} />
-                ) : (
-                  'Add to Cart'
-                )}
-              </button>
+              <div className="flex space-x-4">
+                <button 
+                  onClick={addtocart}
+                  disabled={addingToCart}
+                  className="flex-1 py-3 px-4 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center justify-center"
+                >
+                  {addingToCart ? (
+                    <HashLoader color="#ffffff" size={24} />
+                  ) : (
+                    'Add to Cart'
+                  )}
+                </button>
+                
+                <button 
+                  onClick={handleBuyNow}
+                  disabled={buyingNow}
+                  className="flex-1 py-3 px-4 bg-[#2E7D32] text-white rounded-md hover:bg-[#1B5E20] transition-colors focus:outline-none focus:ring-2 focus:ring-green-700 focus:ring-offset-2 flex items-center justify-center"
+                >
+                  {buyingNow ? (
+                    <HashLoader color="#ffffff" size={24} />
+                  ) : (
+                    'Buy Now'
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>
