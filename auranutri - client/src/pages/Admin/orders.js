@@ -52,10 +52,12 @@ export default function OrderManagement() {
   };
 
   const filteredOrders = orders.filter(order =>
-    order.status !== "pending" && (
-      order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    // order.status !== "pending" && (
+    //   order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    //   order.status.toLowerCase().includes(searchQuery.toLowerCase())
+    // )
+     order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       order.status.toLowerCase().includes(searchQuery.toLowerCase())
-    )
   );
 
   return (
