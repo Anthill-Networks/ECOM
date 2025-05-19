@@ -194,6 +194,7 @@ export default function CheckoutPage() {
             if (verifyResponse.data.status === "success") {
               localStorage.removeItem('cart');
               toast.success('Payment successful!');
+              
               navigate('/ordersuccess');
             } else {
               toast.error('Payment verification failed');
