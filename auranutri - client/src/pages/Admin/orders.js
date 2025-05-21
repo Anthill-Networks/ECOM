@@ -12,7 +12,7 @@ export default function OrderManagement() {
 
   useEffect(() => {
     // Fetch orders
-    axiosInstance.get('/orders')
+    axiosInstance.get('/orders?limit=1000')
       .then(response => {
         console.log(response)
         setOrders(response.data);
