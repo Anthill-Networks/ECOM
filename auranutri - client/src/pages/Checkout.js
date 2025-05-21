@@ -222,6 +222,7 @@ export default function CheckoutPage() {
               }
               
               toast.success('Payment successful!');
+              
               navigate('/ordersuccess');
             } else {
               toast.error('Payment verification failed');
